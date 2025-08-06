@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Smart File Organizer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+      color: #333;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .tab-button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #ddd;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .tab-button.active {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    #file-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .file-card {
+      border: 1px solid #ccc;
+      background-color: white;
+      padding: 16px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .file-card h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .file-card p {
+      margin: 6px 0;
+    }
+
+    .summary {
+      font-style: italic;
+      font-size: 14px;
+      color: #666;
+    }
+
+    button {
+      padding: 6px 12px;
+      margin-right: 10px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover:not(:disabled) {
+      background-color: #0056b3;
+    }
+
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    #controls {
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    #history-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background-color: white;
+    }
+
+    #history-table th,
+    #history-table td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+
+    #history-table th {
+      background-color: #eee;
+    }
+
+    input, select {
+      padding: 6px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    #embedding-progress {
+      width: 100%;
+      margin: 10px 0;
+      display: none;
+    }
+
+    #progress-label {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 10px;
+      display: none;
+
+    }
+    #organizer-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .tab-content {
+      min-height: 300px;  
+    }
+
+
+  </style>
+</head>
+<body>
+  <h2>📁 Smart File Organizer</h2>
+
+  <div class="tabs">
+    <button class="tab-button active" data-tab="organizer-tab">📂 Organize Files</button>
+    <button class="tab-button" data-tab="history-tab">📜 View History</button>
+  </div>
+
+  <!-- Organizer Tab -->
+<div id="organizer-tab" class="tab-content active">
+  <div id="organizer-controls">
+    <button id="group-folders">📂 Group Similar Folders</button>
+    <button id="undo-grouping" >↩️ Undo Grouping</button>
+    <button id="start-embedding"  title="New users must run this once! It may take time.">🧠 Start Folder Embedding</button>
+    <button id="stop-embedding" style="display:none;">⛔ Stop Embedding</button>
+  </div>
+
+  <progress id="embedding-progress" value="0" max="100" style="display:none; width: 100%; margin-top: 10px;"></progress>
+  <p id="progress-label" style="display:none;"></p>
+
+  <div id="file-container"></div>
+</div>
+
+
+  <!-- History Tab -->
+  <div id="history-tab" class="tab-content">
+    <div id="controls">
+      <input type="text" id="search-input" placeholder="🔍 Search filename or summary..." />
+      <select id="filter-category">
+        <option value="">📂 All Categories</option>
+      </select>
+      <button id="view-history">🔄 Load History</button>
+    </div>
+
+    <table id="history-table">
+      <thead>
+        <tr>
+          <th>📄 Filename</th>
+          <th>🗂 Category</th>
+          <th>⏱ Timestamp</th>
+          <th>📝 Summary</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    // Tab switching logic
+    const tabButtons = document.querySelectorAll(".tab-button");
+    const tabContents = document.querySelectorAll(".tab-content");
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const tabId = btn.dataset.tab;
+
+        tabButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        tabContents.forEach(tc => {
+          if (tc.id === tabId) {
+            tc.classList.add("active");
+          } else {
+            tc.classList.remove("active");
+          }
+        });
+      });
+    });
+  </script>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
