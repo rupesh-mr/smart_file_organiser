@@ -1,11 +1,11 @@
 import time
 import os
+import shutil
+import asyncio
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-import shutil
 from extractor import extract_text
 from classifier import classify_text
-import asyncio
 from socket_server import start_socket_server, broadcast
 from logger import init_db, log_file
 from shared_llm import llm
@@ -13,11 +13,10 @@ from shared_llm import llm
 DOWNLOADS_FOLDER = os.path.expanduser("~/Downloads")
 
 
-
 def summarize_with_llm(text, filename=""):
     if not text.strip():
-        print("⚠️ No usable text extracted from file.")
-        return "⚠️ File content is empty or unreadable."
+        print("No usable text extracted from file.")
+        return "File content is empty or unreadable."
 
     ext = os.path.splitext(filename)[1].lower()
 
@@ -38,21 +37,21 @@ def summarize_with_llm(text, filename=""):
 
 ### Summary:"""
 
-    print("📝 Format-aware prompt preview:", prompt[:300])
+    print("Prompt preview:", prompt[:300])
 
     try:
         output = llm(prompt, max_tokens=200, stop=["###"])
         summary = output["choices"][0]["text"].strip()
 
         if not summary:
-            print("❌ LLM returned an empty summary.")
-            return "⚠️ Summary was empty."
+            print("LLM returned an empty summary.")
+            return "Summary was empty."
 
         return summary
 
     except Exception as e:
-        print("🔥 LLM error:", e)
-        return "⚠️ LLM summarization failed."
+        print("LLM error:", e)
+        return "LLM summarization failed."
 
 
 class FileHandler(FileSystemEventHandler):
@@ -60,7 +59,7 @@ class FileHandler(FileSystemEventHandler):
         self.loop = loop
 
     def on_created(self, event):
-        print(f"[👀 FileWatcher] New file created: {event.src_path}")
+        print(f"[FileWatcher] New file created: {event.src_path}")
         if not event.is_directory:
             filename = os.path.basename(event.src_path)
             ext = os.path.splitext(filename)[1].lower()
@@ -68,16 +67,15 @@ class FileHandler(FileSystemEventHandler):
             if filename.startswith('.') or ext in ('.crdownload', '.part', ''):
                 return
 
-            time.sleep(1)  # Wait for download to finish
+            time.sleep(1)  # wait for file write to finish
 
-            # 🧠 Extract content and classify
             content = extract_text(event.src_path)
             category = classify_text(content)
 
             try:
-                summary = summarize_with_llm(content,filename)
+                summary = summarize_with_llm(content, filename)
             except Exception as e:
-                print("⚠️ LLM summarization failed, fallback:", e)
+                print("LLM summarization failed, fallback:", e)
                 summary = content.strip().replace('\n', ' ')[:300] + "..."
 
             log_file(
@@ -88,9 +86,8 @@ class FileHandler(FileSystemEventHandler):
                 summary=summary
             )
 
-            print(f"[📡 Trying to broadcast] {filename} → {category}")
+            print(f"[Broadcast] {filename} → {category}")
 
-            # ✅ Send to Electron
             asyncio.run_coroutine_threadsafe(
                 broadcast({
                     "filename": filename,
@@ -101,34 +98,20 @@ class FileHandler(FileSystemEventHandler):
                 self.loop
             )
 
-            # Local fallback move prompt (can remove later)
             target_folder = os.path.join(DOWNLOADS_FOLDER, category)
             os.makedirs(target_folder, exist_ok=True)
-
-            # move = input(f"Move '{filename}' to '{target_folder}' based on content? (y/n): ")
-            # if move.lower() == 'y':
-            #     try:
-            #         shutil.move(event.src_path, os.path.join(target_folder, filename))
-            #         print(f"✅ Moved to {target_folder}")
-            #     except Exception as e:
-            #         print(f"❌ Failed to move: {e}")
-
-
-
-    # def on_modified(self, event):
-    #     if not event.is_directory:
-    #         print(f"[MODIFIED] File changed: {event.src_path}")
+            # Optional: move file to categorized folder
 
 
 async def main():
     init_db()
-    server = await start_socket_server()
-    print("✅ WebSocket server started")
+    await start_socket_server()
+    print("WebSocket server started")
 
     loop = asyncio.get_running_loop()
 
     observer = Observer()
-    handler = FileHandler(loop)  
+    handler = FileHandler(loop)
     observer.schedule(handler, path=DOWNLOADS_FOLDER, recursive=False)
     observer.start()
 
@@ -137,6 +120,7 @@ async def main():
     except KeyboardInterrupt:
         observer.stop()
     observer.join()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

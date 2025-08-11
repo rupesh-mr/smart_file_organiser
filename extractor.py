@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 import openpyxl
 import pptx
 
+
 def extract_text(file_path):
     ext = os.path.splitext(file_path)[1].lower()
 
@@ -58,5 +59,5 @@ def extract_text(file_path):
             return ""
 
     except Exception as e:
-        print(f"❌ Failed to extract text from {file_path}: {e}")
+        print(f"Failed to extract text from {file_path}: {e}")
         return ""

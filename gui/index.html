@@ -36,6 +36,7 @@
 
     .tab-content {
       display: none;
+      min-height: 300px;
     }
 
     .tab-content.active {
@@ -134,62 +135,56 @@
       color: #555;
       margin-bottom: 10px;
       display: none;
-
     }
+
     #organizer-controls {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       margin-bottom: 10px;
     }
-    .tab-content {
-      min-height: 300px;  
-    }
-
-
   </style>
 </head>
 <body>
-  <h2>📁 Smart File Organizer</h2>
+  <h2>Smart File Organizer</h2>
 
   <div class="tabs">
-    <button class="tab-button active" data-tab="organizer-tab">📂 Organize Files</button>
-    <button class="tab-button" data-tab="history-tab">📜 View History</button>
+    <button class="tab-button active" data-tab="organizer-tab">Organize Files</button>
+    <button class="tab-button" data-tab="history-tab">View History</button>
   </div>
 
   <!-- Organizer Tab -->
-<div id="organizer-tab" class="tab-content active">
-  <div id="organizer-controls">
-    <button id="group-folders">📂 Group Similar Folders</button>
-    <button id="undo-grouping" >↩️ Undo Grouping</button>
-    <button id="start-embedding"  title="New users must run this once! It may take time.">🧠 Start Folder Embedding</button>
-    <button id="stop-embedding" style="display:none;">⛔ Stop Embedding</button>
+  <div id="organizer-tab" class="tab-content active">
+    <div id="organizer-controls">
+      <button id="group-folders">Group Similar Folders</button>
+      <button id="undo-grouping">Undo Grouping</button>
+      <button id="start-embedding" title="New users must run this once! It may take time.">Start Folder Embedding</button>
+      <button id="stop-embedding" style="display:none;">Stop Embedding</button>
+    </div>
+
+    <progress id="embedding-progress" value="0" max="100" style="display:none; width: 100%; margin-top: 10px;"></progress>
+    <p id="progress-label" style="display:none;"></p>
+
+    <div id="file-container"></div>
   </div>
-
-  <progress id="embedding-progress" value="0" max="100" style="display:none; width: 100%; margin-top: 10px;"></progress>
-  <p id="progress-label" style="display:none;"></p>
-
-  <div id="file-container"></div>
-</div>
-
 
   <!-- History Tab -->
   <div id="history-tab" class="tab-content">
     <div id="controls">
-      <input type="text" id="search-input" placeholder="🔍 Search filename or summary..." />
+      <input type="text" id="search-input" placeholder="Search filename or summary..." />
       <select id="filter-category">
-        <option value="">📂 All Categories</option>
+        <option value="">All Categories</option>
       </select>
-      <button id="view-history">🔄 Load History</button>
+      <button id="view-history">Load History</button>
     </div>
 
     <table id="history-table">
       <thead>
         <tr>
-          <th>📄 Filename</th>
-          <th>🗂 Category</th>
-          <th>⏱ Timestamp</th>
-          <th>📝 Summary</th>
+          <th>Filename</th>
+          <th>Category</th>
+          <th>Timestamp</th>
+          <th>Summary</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -209,11 +204,7 @@
         btn.classList.add("active");
 
         tabContents.forEach(tc => {
-          if (tc.id === tabId) {
-            tc.classList.add("active");
-          } else {
-            tc.classList.remove("active");
-          }
+          tc.id === tabId ? tc.classList.add("active") : tc.classList.remove("active");
         });
       });
     });

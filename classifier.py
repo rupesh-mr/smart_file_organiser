@@ -10,12 +10,14 @@ UNDO_LOG_PATH = "undo_log.json"
 
 model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
+
 def load_undo_map():
     if not os.path.exists(UNDO_LOG_PATH):
         return {}
     with open(UNDO_LOG_PATH) as f:
         entries = json.load(f)
-        return {entry["to"]: entry["from"] for entry in entries}
+    return {entry["to"]: entry["from"] for entry in entries}
+
 
 def resolve_grouped_path(original_path, undo_map):
     current = original_path
@@ -25,6 +27,7 @@ def resolve_grouped_path(original_path, undo_map):
             return os.path.join(undo_map[current], relative)
         current = os.path.dirname(current)
     return original_path
+
 
 def classify_text(content):
     if not content.strip():
@@ -47,5 +50,5 @@ def classify_text(content):
         return resolved_path
 
     except Exception as e:
-        print("⚠️ Failed to classify with embedding:", e)
+        print("Failed to classify with embedding:", e)
         return "Uncategorized"
