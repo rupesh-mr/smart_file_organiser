@@ -1,0 +1,16 @@
+faiss-cpu
+numpy
+sentence-transformers
+PyPDF2
+python-docx
+pandas
+beautifulsoup4
+openpyxl
+python-pptx
+torch
+tqdm
+transformers
+scikit-learn
+watchdog
+llama-cpp-python
+websockets
