@@ -32,7 +32,7 @@ Built with:
 
 ```bash
 # Clone the repo
-git clone https://github.com/your-username/smart-file-organizer.git
+git clone https://github.com/rupesh-mr/smart_file_organiser
 cd smart-file-organizer
 
 # Install backend dependencies
