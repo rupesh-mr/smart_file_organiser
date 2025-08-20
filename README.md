@@ -131,12 +131,12 @@ smart-file-organizer/
 
 1. For new users, click **Start Embedding** after launching the app.  
    - This generates embeddings for your files.  
-2. Add files to the watch folder — they appear instantly in the app.  
-3. Click **Group Files** to cluster files and assign AI-generated folder names.  
+2. Download files and they will appear in the app immediately.  
+3. Click **Group Folders* to cluster folders and assign AI-generated folder names.  
 4. Use **Undo** to revert or **History** to review past operations.  
  
 ---
 
 ## License  
 
-This project is licensed under the MIT License.  
+MIT License © 2025 Mallireddy Rupesh
