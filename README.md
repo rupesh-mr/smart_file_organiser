@@ -133,7 +133,7 @@ smart-file-organizer/
    - This generates embeddings for your files.  
 2. Download files and they will appear in the app immediately.  
 3. Click **Group Folders* to cluster folders and assign AI-generated folder names.  
-4. Use **Undo** to revert or **History** to review past operations.  
+4. Use **Undo** to revert folder grouping.  
  
 ---
 
